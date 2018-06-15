@@ -17,7 +17,7 @@ description = 'A JSON serialiser and parser for python that support some extensi
 url = 'https://github.com/bbc/rd-apmm-python-lib-mediajson'
 author = u'James P. Weaver'
 author_email = u'james.barrett@bbc.co.uk'
-license = ''
+license = 'Apache 2'
 long_description = description
 
 
@@ -48,7 +48,8 @@ package_names = packages.keys()
 
 # This is where you list packages which are required
 packages_required = [
-    "six"
+    "six",
+    "mediatimestamp==1.0.0-dev1"
 ]
 
 # This is where you list locations for packages not
