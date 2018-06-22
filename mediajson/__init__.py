@@ -109,8 +109,8 @@ class NMOSJSONDecoder(JSONDecoder):
             if re.match(UUID_REGEX,
                         o):
                 return uuid.UUID(o)
-            elif re.match(r'\d+:\d+',o):
+            elif re.match(r'\d+:\d+', o):
                 return Timestamp.from_tai_sec_nsec(o)
-            elif re.match(r'(\+|-)\d+:\d+',o):
+            elif re.match(r'(\+|-)\d+:\d+', o):
                 return TimeOffset.from_sec_nsec(o)
         return o
