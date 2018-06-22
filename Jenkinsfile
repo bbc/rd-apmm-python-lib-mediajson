@@ -117,38 +117,52 @@ pipeline {
                 }
             }
         }
-        stage ("Upload to Artifactory") {
+        stage ("Upload Packages") {
+            // Duplicates the when clause of each upload so blue ocean can nicely display when stage skipped
             when {
                 anyOf {
                     expression { return params.FORCE_PYUPLOAD }
-                    expression {
-                        bbcShouldUploadArtifacts(branches: ["master"])
-                    }
-                }
-            }
-            steps {
-                sh 'rm -rf dist/*'
-                bbcMakeWheel("py27")
-                bbcMakeWheel("py3")
-                bbcTwineUpload(toxenv: "py3")
-            }
-        }
-        stage ("upload deb") {
-            when {
-                anyOf {
                     expression { return params.FORCE_DEBUPLOAD }
                     expression {
                         bbcShouldUploadArtifacts(branches: ["master"])
                     }
                 }
             }
-            steps {
-                script {
-                    for (def dist in bbcGetSupportedUbuntuVersions()) {
-                        bbcDebUpload(sourceFiles: "_result/${dist}-amd64/*",
-                                     removePrefix: "_result/${dist}-amd64",
-                                     dist: "${dist}",
-                                     apt_repo: "ap/python")
+            parallel {
+                stage ("Upload to Artifactory") {
+                    when {
+                        anyOf {
+                            expression { return params.FORCE_PYUPLOAD }
+                            expression {
+                                bbcShouldUploadArtifacts(branches: ["master"])
+                            }
+                        }
+                    }
+                    steps {
+                        sh 'rm -rf dist/*'
+                        bbcMakeWheel("py27")
+                        bbcMakeWheel("py3")
+                        bbcTwineUpload(toxenv: "py3")
+                    }
+                }
+                stage ("Upload deb") {
+                    when {
+                        anyOf {
+                            expression { return params.FORCE_DEBUPLOAD }
+                            expression {
+                                bbcShouldUploadArtifacts(branches: ["master"])
+                            }
+                        }
+                    }
+                    steps {
+                        script {
+                            for (def dist in bbcGetSupportedUbuntuVersions()) {
+                                bbcDebUpload(sourceFiles: "_result/${dist}-amd64/*",
+                                             removePrefix: "_result/${dist}-amd64",
+                                             dist: "${dist}",
+                                             apt_repo: "ap/python")
+                            }
+                        }
                     }
                 }
             }
