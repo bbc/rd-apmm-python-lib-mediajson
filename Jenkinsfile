@@ -39,7 +39,8 @@ pipeline {
                             env.lint_result = "FAILURE"
                         }
                         bbcGithubNotify(context: "lint/flake8", status: "PENDING")
-                        sh 'flake8'
+                        // Run the linter, excluding build directories (this can also go in the .flake8 config file)
+                        sh 'flake8 --exclude .git,.tox,dist,deb_dist,__pycache__'
                         script {
                             env.lint_result = "SUCCESS" // This will only run if the sh above succeeded
                         }
@@ -89,21 +90,30 @@ pipeline {
                 stage ("Debian Source Build") {
                     steps {
                         script {
-                            env.deb_result = "FAILURE"
+                            env.debSourceBuild_result = "FAILURE"
                         }
-                        bbcGithubNotify(context: "package/deb", status: "PENDING")
+                        bbcGithubNotify(context: "deb/sourceBuild", status: "PENDING")
 
                         sh 'rm -rf deb_dist'
                         sh 'python ./setup.py sdist'
                         sh 'make dsc'
                         bbcPrepareDsc()
                         stash(name: "deb_dist", includes: "deb_dist/*")
+                        script {
+                            env.debSourceBuild_result = "SUCCESS" // This will only run if the steps above succeeded
+                        }
+                    }
+                    post {
+                        always {
+                            bbcGithubNotify(context: "deb/sourceBuild", status: env.debSourceBuild_result)
+                        }
                     }
                 }
             }
         }
         stage ("Build with pbuilder") {
             steps {
+                bbcGithubNotify(context: "deb/packageBuild", status: "PENDING")
                 // Build for all supported platforms and extract results into workspace
                 bbcParallelPbuild(stashname: "deb_dist", dists: bbcGetSupportedUbuntuVersions(), arch: "amd64")
             }
@@ -113,7 +123,7 @@ pipeline {
                 }
                 always {
                     // currentResult is governed by the outcome of the pbuilder steps at this point, so we can use it
-                    bbcGithubNotify(context: "package/deb", status: currentBuild.currentResult)
+                    bbcGithubNotify(context: "deb/packageBuild", status: currentBuild.currentResult)
                 }
             }
         }
@@ -139,10 +149,22 @@ pipeline {
                         }
                     }
                     steps {
+                        script {
+                            env.artifactoryUpload_result = "FAILURE"
+                        }
+                        bbcGithubNotify(context: "artifactory/upload", status: "PENDING")
                         sh 'rm -rf dist/*'
                         bbcMakeWheel("py27")
                         bbcMakeWheel("py3")
                         bbcTwineUpload(toxenv: "py3")
+                        script {
+                            env.artifactoryUpload_result = "SUCCESS" // This will only run if the steps above succeeded
+                        }
+                        post {
+                            always {
+                                bbcGithubNotify(context: "artifactory/upload", status: env.artifactoryUpload_result)
+                            }
+                        }
                     }
                 }
                 stage ("Upload deb") {
@@ -156,11 +178,23 @@ pipeline {
                     }
                     steps {
                         script {
+                            env.debUpload_result = "FAILURE"
+                        }
+                        bbcGithubNotify(context: "deb/upload", status: "PENDING")
+                        script {
                             for (def dist in bbcGetSupportedUbuntuVersions()) {
                                 bbcDebUpload(sourceFiles: "_result/${dist}-amd64/*",
                                              removePrefix: "_result/${dist}-amd64",
                                              dist: "${dist}",
                                              apt_repo: "ap/python")
+                            }
+                        }
+                        script {
+                            env.debUpload_result = "SUCCESS" // This will only run if the steps above succeeded
+                        }
+                        post {
+                            always {
+                                bbcGithubNotify(context: "deb/upload", status: env.debUpload_result)
                             }
                         }
                     }
