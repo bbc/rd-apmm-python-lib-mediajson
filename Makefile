@@ -10,9 +10,15 @@ DESTDIR=/
 PROJECT=$(shell python $(topdir)/setup.py --name)
 VERSION=$(shell python $(topdir)/setup.py --version)
 MODNAME=$(PROJECT)
-DEBNAME=$(shell echo $(MODNAME) | tr '[:upper:]_' '[:lower:]-')
 
-DEBIANDIR=$(topbuilddir)/deb_dist/$(DEBNAME)-$(VERSION)/debian
+# The rules for names and versions in python, rpm, and deb are different
+# and not entirely compatible. As such py2dsc will automatically convert
+# your package name into a suitable deb name and version number, and this
+# code replicates that.
+DEBNAME=$(shell echo $(MODNAME) | tr '[:upper:]_' '[:lower:]-')
+DEBVERSION=$(shell echo $(VERSION) | sed 's/\.dev/~dev/')
+
+DEBIANDIR=$(topbuilddir)/deb_dist/$(DEBNAME)-$(DEBVERSION)/debian
 DEBIANOVERRIDES=$(patsubst $(topdir)/debian/%,$(DEBIANDIR)/%,$(wildcard $(topdir)/debian/*))
 
 RPMDIRS=BUILD BUILDROOT RPMS SOURCES SPECS SRPMS
@@ -25,6 +31,7 @@ all:
 	@echo "make clean   - Get rid of scratch and byte files"
 	@echo "make test    - Test using tox and nose2"
 	@echo "make deb     - Create deb package"
+	@echo "make dsc     - Create debian source package"
 	@echo "make rpm     - Create rpm package"
 	@echo "make wheel   - Create whl package"
 	@echo "make egg     - Create egg package"
@@ -60,11 +67,11 @@ $(DEBIANDIR)/%: $(topdir)/debian/% deb_dist
 	cp $< $@
 
 dsc: deb_dist $(DEBIANOVERRIDES)
-	cp $(topbuilddir)/deb_dist/$(DEBNAME)_$(VERSION)-1.dsc $(topbuilddir)/dist
+	cp $(topbuilddir)/deb_dist/$(DEBNAME)_$(DEBVERSION)-1.dsc $(topbuilddir)/dist
 
 deb: source deb_dist $(DEBIANOVERRIDES)
 	cd $(DEBIANDIR)/..;debuild -uc -us
-	cp $(topbuilddir)/deb_dist/python*$(DEBNAME)_$(VERSION)-1*.deb $(topbuilddir)/dist
+	cp $(topbuilddir)/deb_dist/python*$(DEBNAME)_$(DEBVERSION)-1*.deb $(topbuilddir)/dist
 
 # START OF RPM SPEC RULES
 # If you have your own rpm spec file to use you'll need to disable these rules
