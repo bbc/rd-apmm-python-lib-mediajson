@@ -19,7 +19,7 @@ import unittest
 import json
 from six import StringIO
 from uuid import UUID
-from mediatimestamp import Timestamp, TimeOffset
+from mediatimestamp import Timestamp
 from fractions import Fraction
 
 import mediajson
@@ -35,7 +35,8 @@ PURE_JSON_DATA = {
     "decimal": 0.44
 }
 
-PURE_JSON_STRING = '{"foo": "bar", "baz": ["boop", "beep"], "boggle": {"cat": "\\u732b", "kitten": "\\u5b50\\u732b"}, "numeric": 25, "boolean": true, "decimal": 0.44}'
+PURE_JSON_STRING = '{"foo": "bar", "baz": ["boop", "beep"], "boggle": {"cat": "\\u732b", "kitten": "\\u5b50\\u732b"},' \
+    ' "numeric": 25, "boolean": true, "decimal": 0.44}'
 
 MEDIAJSON_DATA = {
     "foo": "bar",
@@ -46,11 +47,13 @@ MEDIAJSON_DATA = {
     "boolean": True,
     "decimal": 0.44,
     "uuid": UUID("b8b4a34f-3293-11e8-89c0-acde48001122"),
-    "rational": Fraction(30000,1001),
+    "rational": Fraction(30000, 1001),
     "timestamp": Timestamp.from_sec_nsec("417798915:0")
 }
 
-MEDIAJSON_STRING = '{"foo": "bar", "baz": ["boop", "beep"], "boggle": {"cat": "\\u732b", "kitten": "\\u5b50\\u732b"}, "numeric": 25, "boolean": true, "decimal": 0.44, "uuid": "b8b4a34f-3293-11e8-89c0-acde48001122", "rational": {"numerator": 30000, "denominator": 1001}, "timestamp": "417798915:0"}'
+MEDIAJSON_STRING = '{"foo": "bar", "baz": ["boop", "beep"], "boggle": {"cat": "\\u732b", "kitten": "\\u5b50\\u732b"}, '\
+    '"numeric": 25, "boolean": true, "decimal": 0.44, "uuid": "b8b4a34f-3293-11e8-89c0-acde48001122", '\
+    '"rational": {"numerator": 30000, "denominator": 1001}, "timestamp": "417798915:0"}'
 
 
 class TestJSON(unittest.TestCase):
