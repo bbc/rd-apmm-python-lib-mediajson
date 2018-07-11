@@ -49,7 +49,7 @@ package_names = packages.keys()
 # This is where you list packages which are required
 packages_required = [
     "six",
-    "mediatimestamp==1.0.0-dev1"
+    "mediatimestamp >= 1.0.0-dev1"
 ]
 
 # This is where you list locations for packages not
