@@ -75,7 +75,17 @@ def loads(*args, **kwargs):
 
 
 def encode_value(o, return_no_encode=True):
-    if isinstance(o, uuid.UUID):
+    if isinstance(o, dict):
+        if not return_no_encode:
+            return None
+        for key in o:
+            o[key] = encode_value(o[key])
+        return o
+    elif isinstance(o, list):
+        if not return_no_encode:
+            return None
+        return [encode_value(v) for v in o]
+    elif isinstance(o, uuid.UUID):
         return str(o)
     elif isinstance(o, Timestamp):
         return o.to_tai_sec_nsec()
