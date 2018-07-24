@@ -78,9 +78,10 @@ def encode_value(o, return_no_encode=True):
     if isinstance(o, dict):
         if not return_no_encode:
             return None
+        res = {}
         for key in o:
-            o[key] = encode_value(o[key])
-        return o
+            res[key] = encode_value(o[key])
+        return res
     elif isinstance(o, list):
         if not return_no_encode:
             return None
@@ -103,8 +104,10 @@ def decode_value(o):
         if len(o.keys()) == 2 and "numerator" in o and "denominator" in o:
             return Fraction(o['numerator'], o['denominator'])
         else:
+            res = {}
             for key in o:
-                o[key] = decode_value(o[key])
+                res[key] = decode_value(o[key])
+            return res
     elif isinstance(o, list):
         return [decode_value(v) for v in o]
     elif isinstance(o, string_types):
