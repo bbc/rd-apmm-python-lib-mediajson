@@ -34,6 +34,7 @@ import re
 from mediatimestamp import Timestamp, TimeOffset
 
 __all__ = ["dump", "dumps", "load", "loads",
+           "encode_value", "decode_value",
            "JSONEncoder", "JSONDecoder",
            "NMOSJSONEncoder", "NMOSJSONDecoder"]
 
@@ -73,17 +74,58 @@ def loads(*args, **kwargs):
     return json.loads(*args, **kwargs)
 
 
+def encode_value(o, return_no_encode=True):
+    if isinstance(o, dict):
+        if not return_no_encode:
+            return None
+        res = {}
+        for key in o:
+            res[key] = encode_value(o[key])
+        return res
+    elif isinstance(o, list):
+        if not return_no_encode:
+            return None
+        return [encode_value(v) for v in o]
+    elif isinstance(o, uuid.UUID):
+        return str(o)
+    elif isinstance(o, Timestamp):
+        return o.to_tai_sec_nsec()
+    elif isinstance(o, TimeOffset):
+        return o.to_sec_nsec()
+    elif isinstance(o, Fraction):
+        return {"numerator": o.numerator,
+                "denominator": o.denominator}
+    else:
+        return o if return_no_encode else None
+
+
+def decode_value(o):
+    if isinstance(o, dict):
+        if len(o.keys()) == 2 and "numerator" in o and "denominator" in o:
+            return Fraction(o['numerator'], o['denominator'])
+        else:
+            res = {}
+            for key in o:
+                res[key] = decode_value(o[key])
+            return res
+    elif isinstance(o, list):
+        return [decode_value(v) for v in o]
+    elif isinstance(o, string_types):
+        if re.match(UUID_REGEX,
+                    o):
+            return uuid.UUID(o)
+        elif re.match(r'\d+:\d+', o):
+            return Timestamp.from_tai_sec_nsec(o)
+        elif re.match(r'(\+|-)\d+:\d+', o):
+            return TimeOffset.from_sec_nsec(o)
+    return o
+
+
 class NMOSJSONEncoder(JSONEncoder):
     def default(self, o):
-        if isinstance(o, uuid.UUID):
-            return str(o)
-        elif isinstance(o, Timestamp):
-            return o.to_tai_sec_nsec()
-        elif isinstance(o, TimeOffset):
-            return o.to_sec_nsec()
-        elif isinstance(o, Fraction):
-            return {"numerator": o.numerator,
-                    "denominator": o.denominator}
+        result = encode_value(o, return_no_encode=False)
+        if result is not None:
+            return result
         else:
             return super(NMOSJSONEncoder, self).default(o)
 
@@ -93,24 +135,5 @@ class NMOSJSONDecoder(JSONDecoder):
         (value, offset) = super(NMOSJSONDecoder, self).raw_decode(s,
                                                                   *args,
                                                                   **kwargs)
-        value = self._reinterpret_object(value)
+        value = decode_value(value)
         return (value, offset)
-
-    def _reinterpret_object(self, o):
-        if isinstance(o, dict):
-            if len(o.keys()) == 2 and "numerator" in o and "denominator" in o:
-                return Fraction(o['numerator'], o['denominator'])
-            else:
-                for key in o:
-                    o[key] = self._reinterpret_object(o[key])
-        elif isinstance(o, list):
-            return [self._reinterpret_object(v) for v in o]
-        elif isinstance(o, string_types):
-            if re.match(UUID_REGEX,
-                        o):
-                return uuid.UUID(o)
-            elif re.match(r'\d+:\d+', o):
-                return Timestamp.from_tai_sec_nsec(o)
-            elif re.match(r'(\+|-)\d+:\d+', o):
-                return TimeOffset.from_sec_nsec(o)
-        return o
