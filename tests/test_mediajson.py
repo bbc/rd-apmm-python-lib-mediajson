@@ -19,7 +19,7 @@ import unittest
 import json
 from six import StringIO
 from uuid import UUID
-from mediatimestamp import Timestamp
+from mediatimestamp import Timestamp, TimeRange
 from fractions import Fraction
 
 import mediajson
@@ -48,12 +48,24 @@ MEDIAJSON_DATA = {
     "decimal": 0.44,
     "uuid": UUID("b8b4a34f-3293-11e8-89c0-acde48001122"),
     "rational": Fraction(30000, 1001),
-    "timestamp": Timestamp.from_sec_nsec("417798915:0")
+    "timestamp": Timestamp.from_sec_nsec("417798915:0"),
+    "timeranges": [TimeRange(Timestamp(417798915, 0), Timestamp(417798916, 999), TimeRange.INCLUSIVE),
+                   TimeRange(Timestamp(417798915, 0), Timestamp(417798916, 999), TimeRange.EXCLUSIVE),
+                   TimeRange(Timestamp(417798915, 0), Timestamp(417798916, 999), TimeRange.INCLUDE_START),
+                   TimeRange(Timestamp(417798915, 0), Timestamp(417798916, 999), TimeRange.INCLUDE_END),
+                   TimeRange.never(),
+                   TimeRange.eternity(),
+                   TimeRange.from_start(Timestamp(417798915, 0), TimeRange.INCLUSIVE),
+                   TimeRange.from_start(Timestamp(417798915, 0), TimeRange.EXCLUSIVE),
+                   TimeRange.from_end(Timestamp(417798915, 0), TimeRange.INCLUSIVE),
+                   TimeRange.from_end(Timestamp(417798915, 0), TimeRange.EXCLUSIVE)]
 }
 
 MEDIAJSON_STRING = '{"foo": "bar", "baz": ["boop", "beep"], "boggle": {"cat": "\\u732b", "kitten": "\\u5b50\\u732b"}, '\
     '"numeric": 25, "boolean": true, "decimal": 0.44, "uuid": "b8b4a34f-3293-11e8-89c0-acde48001122", '\
-    '"rational": {"numerator": 30000, "denominator": 1001}, "timestamp": "417798915:0"}'
+    '"rational": {"numerator": 30000, "denominator": 1001}, "timestamp": "417798915:0",'\
+    '"timeranges": ["[417798915:0_417798916:999]", "(417798915:0_417798916:999)", "[417798915:0_417798916:999)", '\
+    '"(417798915:0_417798916:999]", "()", "_", "[417798915:0_", "(417798915:0_", "_417798915:0]", "_417798915:0)"]}'
 
 
 class TestJSON(unittest.TestCase):

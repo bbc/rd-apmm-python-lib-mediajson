@@ -31,7 +31,7 @@ from fractions import Fraction
 from six import string_types
 import re
 
-from mediatimestamp import Timestamp, TimeOffset
+from mediatimestamp import Timestamp, TimeOffset, TimeRange
 
 __all__ = ["dump", "dumps", "load", "loads",
            "encode_value", "decode_value",
@@ -92,6 +92,8 @@ def encode_value(o, return_no_encode=True):
         return o.to_tai_sec_nsec()
     elif isinstance(o, TimeOffset):
         return o.to_sec_nsec()
+    elif isinstance(o, TimeRange):
+        return o.to_sec_nsec_range()
     elif isinstance(o, Fraction):
         return {"numerator": o.numerator,
                 "denominator": o.denominator}
@@ -114,10 +116,14 @@ def decode_value(o):
         if re.match(UUID_REGEX,
                     o):
             return uuid.UUID(o)
-        elif re.match(r'\d+:\d+', o):
+        elif re.match(r'^\d+:\d+$', o):
             return Timestamp.from_tai_sec_nsec(o)
-        elif re.match(r'(\+|-)\d+:\d+', o):
+        elif re.match(r'^(\+|-)\d+:\d+$', o):
             return TimeOffset.from_sec_nsec(o)
+        elif re.match(r'^(\(|\[)?(\d+:\d+)?_(\d+:\d+)?(\)|\])?$', o):
+            return TimeRange.from_str(o)
+        elif o == "()":
+            return TimeRange.never()
     return o
 
 
