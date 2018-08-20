@@ -109,6 +109,18 @@ class TestJSON(unittest.TestCase):
 
         self.assertEqual(MEDIAJSON_DATA, decoded)
 
+    def test_decode_mediajson_dotted_times(self):
+        """Insert timeranges formatted in sec.frac form instead of sec:nanosec, check they get decoded"""
+        self.maxDiff = None
+        json_data = json.loads(MEDIAJSON_STRING)
+        json_data["timeranges"][0] = "[417798915.0_417798916.000000999]"
+
+        # Load the ensuing string, check we still get valid timestamps
+        encoded_string = json.dumps(json_data)
+        decoded = mediajson.loads(encoded_string)
+
+        self.assertEqual(MEDIAJSON_DATA, decoded)
+
     def test_load_mediajson(self):
         fp = StringIO(MEDIAJSON_STRING)
 
