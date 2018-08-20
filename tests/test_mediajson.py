@@ -113,7 +113,6 @@ class TestJSON(unittest.TestCase):
         """Insert timeranges formatted in sec.frac form instead of sec:nanosec, check they get decoded"""
         self.maxDiff = None
         json_data = json.loads(MEDIAJSON_STRING)
-        json_data["timestamp"] = "417798915.0"
         json_data["timeranges"][0] = "[417798915.0_417798916.000000999]"
 
         # Load the ensuing string, check we still get valid timestamps
