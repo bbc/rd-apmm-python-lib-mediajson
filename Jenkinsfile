@@ -26,6 +26,9 @@ pipeline {
         booleanParam(name: "FORCE_PYUPLOAD", defaultValue: false, description: "Force Python artifact upload")
         booleanParam(name: "FORCE_DEBUPLOAD", defaultValue: false, description: "Force Debian package upload")
     }
+    triggers {
+        cron(env.BRANCH_NAME == 'master' ? 'H H(0-8) * * *' : '') // Build master some time every morning
+    }
     environment {
         http_proxy = "http://www-cache.rd.bbc.co.uk:8080"
         https_proxy = "http://www-cache.rd.bbc.co.uk:8080"
