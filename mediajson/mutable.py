@@ -1,4 +1,4 @@
-# Copyright 2017 British Broadcasting Corporation
+# Copyright 2019 British Broadcasting Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +14,7 @@
 
 """
 This module contains methods and classes to extend json encoding and decoding
-to cover timestamps, uuids, and fractions. The mutable types are provided by
-default and if you require the immutable types then import from immutable instead.
+to cover _immutable_ timestamps, uuids, and fractions.
 
 To make use of it either use the dumps, loads, dump, and load functions in
 place of the versions from the standard json module, or use the classes
@@ -23,13 +22,37 @@ NMOSJSONEncoder and NMOSJSONDecoder as your encoder and decoder classes.
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 
+import mediatimestamp.mutable as mutable
 from json import JSONEncoder, JSONDecoder
 
-from .mutable import dump, dumps, load, loads, encode_value, decode_value, NMOSJSONEncoder, NMOSJSONDecoder
-
+from .base import dump, dumps, encode_value
+from .base import _base_load, _base_loads, _base_decode_value
+from .base import NMOSJSONEncoder
 
 __all__ = ["dump", "dumps", "load", "loads",
            "encode_value", "decode_value",
            "JSONEncoder", "JSONDecoder",
            "NMOSJSONEncoder", "NMOSJSONDecoder"]
+
+
+def load(*args, **kwargs):
+    return _base_load(NMOSJSONDecoder, *args, **kwargs)
+
+
+def loads(*args, **kwargs):
+    return _base_loads(NMOSJSONDecoder, *args, **kwargs)
+
+
+def decode_value(o):
+    return _base_decode_value(o, mutable.Timestamp, mutable.TimeOffset, mutable.TimeRange)
+
+
+class NMOSJSONDecoder(JSONDecoder):
+    def raw_decode(self, s, *args, **kwargs):
+        (value, offset) = super(NMOSJSONDecoder, self).raw_decode(s,
+                                                                  *args,
+                                                                  **kwargs)
+        value = decode_value(value)
+        return (value, offset)

@@ -22,7 +22,7 @@ from uuid import UUID
 from mediatimestamp import Timestamp, TimeRange
 from fractions import Fraction
 
-import mediajson
+import mediajson.mutable
 
 
 PURE_JSON_DATA = {
