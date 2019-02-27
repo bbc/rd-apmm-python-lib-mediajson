@@ -1,5 +1,9 @@
 # mediajson Changelog
 
+## 1.1.0
+- Provide support for immutable mediatimestamp and default to mutable.
+- Allow either mutable or immutable when encoding to JSON.
+
 ## 1.0.1
 - Remove unused install command from tox.ini
 - Add Jenkins build trigger to rebuild master every day.
