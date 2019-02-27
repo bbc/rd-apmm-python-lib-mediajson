@@ -31,7 +31,8 @@ from fractions import Fraction
 from six import string_types
 import re
 
-from mediatimestamp.mutable import Timestamp, TimeOffset, TimeRange
+import mediatimestamp.mutable as mutable
+import mediatimestamp.immutable as immutable
 
 __all__ = ["dump", "dumps", "load", "loads",
            "encode_value", "decode_value",
@@ -88,11 +89,11 @@ def encode_value(o, return_no_encode=True):
         return [encode_value(v) for v in o]
     elif isinstance(o, uuid.UUID):
         return str(o)
-    elif isinstance(o, Timestamp):
+    elif isinstance(o, mutable.Timestamp) or isinstance(o, immutable.Timestamp):
         return o.to_tai_sec_nsec()
-    elif isinstance(o, TimeOffset):
+    elif isinstance(o, mutable.TimeOffset) or isinstance(o, immutable.TimeOffset):
         return o.to_sec_nsec()
-    elif isinstance(o, TimeRange):
+    elif isinstance(o, mutable.TimeRange) or isinstance(o, immutable.TimeRange):
         return o.to_sec_nsec_range()
     elif isinstance(o, Fraction):
         return {"numerator": o.numerator,
@@ -117,13 +118,13 @@ def decode_value(o):
                     o):
             return uuid.UUID(o)
         elif re.match(r'^\d+:\d+$', o):
-            return Timestamp.from_tai_sec_nsec(o)
+            return mutable.Timestamp.from_tai_sec_nsec(o)
         elif re.match(r'^(\+|-)\d+:\d+$', o):
-            return TimeOffset.from_sec_nsec(o)
+            return mutable.TimeOffset.from_sec_nsec(o)
         elif re.match(r'^(\(|\[)?(\d+:\d+)?_(\d+:\d+)?(\)|\])?$', o):
-            return TimeRange.from_str(o)
+            return mutable.TimeRange.from_str(o)
         elif o == "()":
-            return TimeRange.never()
+            return mutable.TimeRange.never()
     return o
 
 
