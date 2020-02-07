@@ -27,6 +27,11 @@ RPM_PREFIX?=$(topdir)/build/rpm
 RPMDIRS=BUILD BUILDROOT RPMS SOURCES SPECS SRPMS
 RPMBUILDDIRS=$(patsubst %, $(RPM_PREFIX)/%, $(RPMDIRS))
 
+TOX_WORK_DIR?=$(topbuilddir)
+TOXDIR=$(TOX_WORK_DIR)/$(MODNAME)/.tox/
+TOXENV?=py36
+TOX_ACTIVATE=$(TOXDIR)/$(TOXENV)/bin/activate
+
 all:
 	@echo "$(PROJECT)-$(VERSION)"
 	@echo "make source  - Create source package"
@@ -53,7 +58,7 @@ install:
 
 clean:
 	$(PYTHON) $(topdir)/setup.py clean || true
-	rm -rf $(topbuilddir)/.tox
+	rm -rf $(TOXDIR)
 	rm -rf $(topbuilddir)/build/ MANIFEST
 	rm -rf $(topbuilddir)/dist
 	rm -rf $(topbuilddir)/deb_dist
@@ -62,7 +67,18 @@ clean:
 	find $(topdir) -name '*.py,cover' -delete
 
 test:
-	tox
+	tox -c tox.ini
+
+testenv: $(TOX_ACTIVATE)
+
+$(TOX_ACTIVATE): tox.ini setup.py
+	tox -r -c tox.ini -e $(TOXENV) --notest
+
+lint: $(TOX_ACTIVATE)
+	. $(TOX_ACTIVATE) && python -m flake8 $(MODNAME) tests
+
+mypy: $(TOX_ACTIVATE)
+	. $(TOX_ACTIVATE) && python -m mypy -p $(MODNAME)
 
 deb_dist: $(topbuilddir)/dist/$(MODNAME)-$(VERSION).tar.gz
 	$(PY2DSC) --with-python2=true --with-python3=true $(topbuilddir)/dist/$(MODNAME)-$(VERSION).tar.gz
