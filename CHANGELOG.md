@@ -1,5 +1,9 @@
 # mediajson Changelog
 
+# 1.1.2
+- Final supported version for python 2.7
+- Some simple fixes to CI, Makefile and tox tooling
+
 ## 1.1.1
 - Only attempt to parse UUIDs when they comprise the entire string.
 
