@@ -12,8 +12,7 @@ understanding a wider range of python types including the `mediatimestamps.times
 
 ### Requirements
 
-* A working Python 2.7 or Python 3.x installation
-* BBC R&D's internal deb repository set up as a source for apt (if installing via apt-get)
+* A working Python 3.6+ installation
 * The tool [tox](https://tox.readthedocs.io/en/latest/) is needed to run the unittests, but not required to use the library.
 
 ### Steps

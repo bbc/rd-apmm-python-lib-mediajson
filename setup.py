@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 #
 # Copyright 2018 British Broadcasting Corporation
 #
@@ -6,13 +6,12 @@
 # If you have received a copy of this erroneously then you do
 # not have permission to reproduce it.
 
-from __future__ import print_function
 from setuptools import setup
 import os
 
 # Basic metadata
 name = 'mediajson'
-version = '1.1.2'
+version = '1.2.0.dev1'
 description = 'A JSON serialiser and parser for python that supports extensions convenient for our media grain formats'
 url = 'https://github.com/bbc/rd-apmm-python-lib-mediajson'
 author = u'James P. Weaver'
@@ -48,8 +47,7 @@ package_names = packages.keys()
 
 # This is where you list packages which are required
 packages_required = [
-    "six",
-    "mediatimestamp >= 1.0.0"
+    "mediatimestamp >= 2.0.0.dev2"
 ]
 
 # This is where you list locations for packages not
@@ -59,6 +57,7 @@ packages_required = [
 deps_required = []
 
 setup(name=name,
+      python_requires='>=3.6.0',
       version=version,
       description=description,
       url=url,
@@ -67,6 +66,7 @@ setup(name=name,
       license=license,
       packages=package_names,
       package_dir=packages,
+      package_data={name: ['py.typed'] for name in package_names},
       install_requires=packages_required,
       scripts=[],
       data_files=[],

@@ -21,9 +21,6 @@ place of the versions from the standard json module, or use the classes
 NMOSJSONEncoder and NMOSJSONDecoder as your encoder and decoder classes.
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 import mediatimestamp.immutable as immutable
 from json import JSONEncoder, JSONDecoder
 

@@ -21,14 +21,10 @@ place of the versions from the standard json module, or use the classes
 NMOSJSONEncoder and NMOSJSONDecoder as your encoder and decoder classes.
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 import uuid
 import json
 from json import JSONEncoder
 from fractions import Fraction
-from six import string_types
 import re
 
 import mediatimestamp.mutable as mutable
@@ -108,7 +104,7 @@ def _base_decode_value(o, timestamp_cls, timeoffset_cls, timerange_cls):
             return res
     elif isinstance(o, list):
         return [_base_decode_value(v, timestamp_cls, timeoffset_cls, timerange_cls) for v in o]
-    elif isinstance(o, string_types):
+    elif isinstance(o, str):
         if re.match(UUID_REGEX,
                     o):
             return uuid.UUID(o)
