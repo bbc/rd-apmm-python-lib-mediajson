@@ -32,89 +32,98 @@ pipeline {
     environment {
         http_proxy = "http://www-cache.rd.bbc.co.uk:8080"
         https_proxy = "http://www-cache.rd.bbc.co.uk:8080"
+        PATH = "$HOME/.pyenv/bin:$PATH"
     }
     stages {
-        stage ("Parallel Jobs") {
-            parallel {
-                stage ("Linting Check") {
+        stage("Clean Environment") {
+            steps {
+                sh 'git clean -dfx'
+                sh 'rm -rf /tmp/$(basename ${WORKSPACE})/'
+            }
+        }
+        stage("Ensure pyenv has python3.6.8") {
+            steps {
+                sh "pyenv install -s 3.6.8"
+                sh "pyenv local 3.6.8"
+            }
+        }
+        stage ("Linting Check") {
+            steps {
+                script {
+                    env.lint_result = "FAILURE"
+                }
+                bbcGithubNotify(context: "lint/flake8", status: "PENDING")
+                // Run the linter, excluding build directories (this can also go in the .flake8 config file)
+                sh 'make lint'
+                script {
+                    env.lint_result = "SUCCESS" // This will only run if the sh above succeeded
+                }
+            }
+            post {
+                always {
+                    bbcGithubNotify(context: "lint/flake8", status: env.lint_result)
+                }
+            }
+        }
+        stage ("Python Unit Tests") {
+            stages {
+                stage ("Python 2.7 Unit Tests") {
                     steps {
                         script {
-                            env.lint_result = "FAILURE"
+                            env.py27_result = "FAILURE"
                         }
-                        bbcGithubNotify(context: "lint/flake8", status: "PENDING")
-                        // Run the linter, excluding build directories (this can also go in the .flake8 config file)
-                        sh 'flake8 --exclude .git,.tox,dist,deb_dist,__pycache__'
+                        bbcGithubNotify(context: "tests/py27", status: "PENDING")
+                        // Use a workdirectory in /tmp to avoid shebang length limitation
+                        sh 'tox -e py27 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py27'
                         script {
-                            env.lint_result = "SUCCESS" // This will only run if the sh above succeeded
+                            env.py27_result = "SUCCESS" // This will only run if the sh above succeeded
                         }
                     }
                     post {
                         always {
-                            bbcGithubNotify(context: "lint/flake8", status: env.lint_result)
+                            bbcGithubNotify(context: "tests/py27", status: env.py27_result)
                         }
                     }
                 }
-                stage ("Python Unit Tests") {
-                    stages {
-                        stage ("Python 2.7 Unit Tests") {
-                            steps {
-                                script {
-                                    env.py27_result = "FAILURE"
-                                }
-                                bbcGithubNotify(context: "tests/py27", status: "PENDING")
-                                // Use a workdirectory in /tmp to avoid shebang length limitation
-                                sh 'tox -e py27 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py27'
-                                script {
-                                    env.py27_result = "SUCCESS" // This will only run if the sh above succeeded
-                                }
-                            }
-                            post {
-                                always {
-                                    bbcGithubNotify(context: "tests/py27", status: env.py27_result)
-                                }
-                            }
-                        }
-                        stage ("Python 3 Unit Tests") {
-                            steps {
-                                script {
-                                    env.py3_result = "FAILURE"
-                                }
-                                bbcGithubNotify(context: "tests/py3", status: "PENDING")
-                                // Use a workdirectory in /tmp to avoid shebang length limitation
-                                sh 'tox -e py3 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py3'
-                                script {
-                                    env.py3_result = "SUCCESS" // This will only run if the sh above succeeded
-                                }
-                            }
-                            post {
-                                always {
-                                    bbcGithubNotify(context: "tests/py3", status: env.py3_result)
-                                }
-                            }
-                        }
-                    }
-                }
-                stage ("Debian Source Build") {
+                stage ("Python 3 Unit Tests") {
                     steps {
                         script {
-                            env.debSourceBuild_result = "FAILURE"
+                            env.py3_result = "FAILURE"
                         }
-                        bbcGithubNotify(context: "deb/sourceBuild", status: "PENDING")
+                        bbcGithubNotify(context: "tests/py3", status: "PENDING")
+                        // Use a workdirectory in /tmp to avoid shebang length limitation
+                        sh 'tox -e py3 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py3'
+                        script {
+                            env.py3_result = "SUCCESS" // This will only run if the sh above succeeded
+                        }
+                    }
+                    post {
+                        always {
+                            bbcGithubNotify(context: "tests/py3", status: env.py3_result)
+                        }
+                    }
+                }
+            }
+        }
+        stage ("Debian Source Build") {
+            steps {
+                script {
+                    env.debSourceBuild_result = "FAILURE"
+                }
+                bbcGithubNotify(context: "deb/sourceBuild", status: "PENDING")
 
-                        sh 'rm -rf deb_dist'
-                        sh 'python ./setup.py sdist'
-                        sh 'make dsc'
-                        bbcPrepareDsc()
-                        stash(name: "deb_dist", includes: "deb_dist/*")
-                        script {
-                            env.debSourceBuild_result = "SUCCESS" // This will only run if the steps above succeeded
-                        }
-                    }
-                    post {
-                        always {
-                            bbcGithubNotify(context: "deb/sourceBuild", status: env.debSourceBuild_result)
-                        }
-                    }
+                sh 'rm -rf deb_dist'
+                sh 'python ./setup.py sdist'
+                sh 'make dsc'
+                bbcPrepareDsc()
+                stash(name: "deb_dist", includes: "deb_dist/*")
+                script {
+                    env.debSourceBuild_result = "SUCCESS" // This will only run if the steps above succeeded
+                }
+            }
+            post {
+                always {
+                    bbcGithubNotify(context: "deb/sourceBuild", status: env.debSourceBuild_result)
                 }
             }
         }
@@ -191,9 +200,9 @@ pipeline {
                         script {
                             for (def dist in bbcGetSupportedUbuntuVersions()) {
                                 bbcDebUpload(sourceFiles: "_result/${dist}-amd64/*",
-                                             removePrefix: "_result/${dist}-amd64",
-                                             dist: "${dist}",
-                                             apt_repo: "ap/python")
+                                                removePrefix: "_result/${dist}-amd64",
+                                                dist: "${dist}",
+                                                apt_repo: "ap/python")
                             }
                         }
                         script {
