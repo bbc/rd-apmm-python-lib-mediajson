@@ -94,7 +94,9 @@ class TestJSONEncode(unittest.TestCase):
 
         self.assertEqual(MEDIAJSON_DATA, decoded)
 
-    def test_loads_mediajson(self):
-        decoded = mediajson.loads(MEDIAJSON_STRING)
+    def test_encode_value(self):
+        partially_encoded = mediajson.encode_value(MEDIAJSON_DATA)
+        encoded = json.dumps(partially_encoded)
+        decoded = mediajson.loads(encoded)
 
         self.assertEqual(MEDIAJSON_DATA, decoded)

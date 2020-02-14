@@ -122,4 +122,4 @@ wheel:
 egg:
 	$(PYTHON) $(topdir)/setup.py bdist_egg
 
-.PHONY: test clean install source deb dsc rpm wheel egg all rpm_dirs rpm_spec
+.PHONY: test clean install source deb dsc rpm wheel egg all rpm_dirs rpm_spec docs
