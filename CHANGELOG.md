@@ -1,5 +1,10 @@
 # mediajson Changelog
 
+# 2.0.0 (Under construction)
+- Dropped support for versions of python prior to 3.6
+- Dropped all support for mutable timestamps
+- Rearranged internal structure of library
+
 # 1.1.2
 - Final supported version for python 2.7
 - Some simple fixes to CI, Makefile and tox tooling

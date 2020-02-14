@@ -22,11 +22,10 @@ place of the versions from the standard json module, or use the classes
 NMOSJSONEncoder and NMOSJSONDecoder as your encoder and decoder classes.
 """
 
-from __future__ import absolute_import
-
 from json import JSONEncoder, JSONDecoder
 
-from .mutable import dump, dumps, load, loads, encode_value, decode_value, NMOSJSONEncoder, NMOSJSONDecoder
+from .encode import dump, dumps, encode_value, NMOSJSONEncoder
+from .decode import load, loads, decode_value, NMOSJSONDecoder
 
 
 __all__ = ["dump", "dumps", "load", "loads",

@@ -12,17 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 import unittest
-import json
-from six import StringIO
+from io import StringIO
 from uuid import UUID
 from mediatimestamp import Timestamp, TimeRange
 from fractions import Fraction
 
-import mediajson.mutable
+import mediajson
 
 
 PURE_JSON_DATA = {
@@ -68,21 +64,7 @@ MEDIAJSON_STRING = '{"foo": "bar", "baz": ["boop", "beep"], "boggle": {"cat": "\
     '"(417798915:0_417798916:999]", "()", "_", "[417798915:0_", "(417798915:0_", "_417798915:0]", "_417798915:0)"]}'
 
 
-class TestJSON(unittest.TestCase):
-    def test_dump_pure_json(self):
-        fp = StringIO()
-
-        mediajson.dump(PURE_JSON_DATA, fp)
-
-        decoded = json.loads(fp.getvalue())
-        self.assertEqual(PURE_JSON_DATA, decoded)
-
-    def test_dumps_pure_json(self):
-        encoded = mediajson.dumps(PURE_JSON_DATA)
-        decoded = json.loads(encoded)
-
-        self.assertEqual(PURE_JSON_DATA, decoded)
-
+class TestJSONDecode(unittest.TestCase):
     def test_load_pure_json(self):
         fp = StringIO(PURE_JSON_STRING)
 
@@ -94,20 +76,6 @@ class TestJSON(unittest.TestCase):
         decoded = mediajson.loads(PURE_JSON_STRING)
 
         self.assertEqual(PURE_JSON_DATA, decoded)
-
-    def test_dump_mediajson(self):
-        fp = StringIO()
-
-        mediajson.dump(MEDIAJSON_DATA, fp)
-
-        decoded = mediajson.loads(fp.getvalue())
-        self.assertEqual(MEDIAJSON_DATA, decoded)
-
-    def test_dumps_mediajson(self):
-        encoded = mediajson.dumps(MEDIAJSON_DATA)
-        decoded = mediajson.loads(encoded)
-
-        self.assertEqual(MEDIAJSON_DATA, decoded)
 
     def test_load_mediajson(self):
         fp = StringIO(MEDIAJSON_STRING)
