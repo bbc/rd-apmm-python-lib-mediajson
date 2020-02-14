@@ -3,7 +3,6 @@
 /*
  Runs the following steps in parallel and reports results to GitHub:
  - Lint using flake8
- - Run Python 2.7 unit tests in tox
  - Run Python 3 unit tests in tox
  - Build Debian packages for supported Ubuntu versions
 
