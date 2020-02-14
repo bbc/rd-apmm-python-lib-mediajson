@@ -11,7 +11,7 @@ import os
 
 # Basic metadata
 name = 'mediajson'
-version = '1.2.0.dev1'
+version = '2.0.0.dev1'
 description = 'A JSON serialiser and parser for python that supports extensions convenient for our media grain formats'
 url = 'https://github.com/bbc/rd-apmm-python-lib-mediajson'
 author = u'James P. Weaver'
