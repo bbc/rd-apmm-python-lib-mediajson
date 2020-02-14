@@ -63,12 +63,12 @@ def encode_value(o: MediaJSONSerialisable,
             return None
         res = {}
         for key in o:
-            res[key] = encode_value_or_fail(o[key])
-        return cast(JSONSerialisable, res)
+            res[key] = encode_value(o[key])
+        return cast(MediaJSONSerialisable, res)
     elif isinstance(o, list):
         if not return_no_encode:
             return None
-        return cast(JSONSerialisable, [encode_value_or_fail(v) for v in o])
+        return cast(MediaJSONSerialisable, [encode_value(v) for v in o])
     elif isinstance(o, uuid.UUID):
         return str(o)
     elif isinstance(o, Timestamp):
