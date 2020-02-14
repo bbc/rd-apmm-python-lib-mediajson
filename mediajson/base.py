@@ -30,8 +30,7 @@ import re
 from typing import Type, Optional, Union, cast
 from .typing import MediaJSONSerialisable, JSONSerialisable
 
-import mediatimestamp.mutable as mutable
-import mediatimestamp.immutable as immutable
+from mediatimestamp.immutable import Timestamp, TimeOffset, TimeRange
 
 
 UUID_REGEX = re.compile(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
@@ -88,11 +87,11 @@ def encode_value(o: MediaJSONSerialisable,
         return cast(JSONSerialisable, [encode_value_or_fail(v) for v in o])
     elif isinstance(o, uuid.UUID):
         return str(o)
-    elif isinstance(o, mutable.Timestamp) or isinstance(o, immutable.Timestamp):
+    elif isinstance(o, Timestamp):
         return o.to_tai_sec_nsec()
-    elif isinstance(o, mutable.TimeOffset) or isinstance(o, immutable.TimeOffset):
+    elif isinstance(o, TimeOffset):
         return o.to_sec_nsec()
-    elif isinstance(o, mutable.TimeRange) or isinstance(o, immutable.TimeRange):
+    elif isinstance(o, TimeRange):
         return o.to_sec_nsec_range()
     elif isinstance(o, Fraction):
         return {"numerator": o.numerator,
@@ -106,9 +105,9 @@ def encode_value_or_fail(o: MediaJSONSerialisable) -> Optional[JSONSerialisable]
 
 
 def _base_decode_value(o: JSONSerialisable,
-                       timestamp_cls: Type[immutable.Timestamp],
-                       timeoffset_cls: Type[immutable.TimeOffset],
-                       timerange_cls: Type[immutable.TimeRange]) -> MediaJSONSerialisable:
+                       timestamp_cls: Type[Timestamp],
+                       timeoffset_cls: Type[TimeOffset],
+                       timerange_cls: Type[TimeRange]) -> MediaJSONSerialisable:
     if isinstance(o, dict):
         if len(o.keys()) == 2 and "numerator" in o and "denominator" in o:
             return Fraction(o['numerator'], o['denominator'])
