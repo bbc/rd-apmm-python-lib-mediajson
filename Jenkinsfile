@@ -53,7 +53,9 @@ pipeline {
                     env.lint_result = "FAILURE"
                 }
                 bbcGithubNotify(context: "lint/flake8", status: "PENDING")
-                sh 'make lint'
+                withBBCRDPythonArtifactory {
+                   sh 'make lint'
+                }
                 script {
                     env.lint_result = "SUCCESS" // This will only run if the sh above succeeded
                 }
@@ -70,7 +72,9 @@ pipeline {
                     env.mypy_result = "FAILURE"
                 }
                 bbcGithubNotify(context: "type/mypy", status: "PENDING")
-                sh 'make mypy'
+                withBBCRDPythonArtifactory {
+                   sh 'make mypy'
+                }
                 script {
                     env.mypy_result = "SUCCESS" // This will only run if the sh above succeeded
                 }
@@ -87,8 +91,9 @@ pipeline {
                     env.py3_result = "FAILURE"
                 }
                 bbcGithubNotify(context: "tests/py3", status: "PENDING")
-                // Use a workdirectory in /tmp to avoid shebang length limitation
-                sh 'make test'
+                withBBCRDPythonArtifactory {
+                   sh 'make test'
+                }
                 script {
                     env.py3_result = "SUCCESS" // This will only run if the sh above succeeded
                 }
@@ -106,10 +111,12 @@ pipeline {
                 }
                 bbcGithubNotify(context: "deb/sourceBuild", status: "PENDING")
 
-                sh 'rm -rf deb_dist'
-                sh 'python ./setup.py sdist'
-                sh 'make dsc'
-                bbcPrepareDsc()
+                withBBCRDPythonArtifactory {
+                   sh 'rm -rf deb_dist'
+                    sh 'python ./setup.py sdist'
+                    sh 'make dsc'
+                    bbcPrepareDsc()
+                }
                 stash(name: "deb_dist", includes: "deb_dist/*")
                 script {
                     env.debSourceBuild_result = "SUCCESS" // This will only run if the steps above succeeded
@@ -144,7 +151,7 @@ pipeline {
                     expression { return params.FORCE_PYUPLOAD }
                     expression { return params.FORCE_DEBUPLOAD }
                     expression {
-                        bbcShouldUploadArtifacts(branches: ["master"])
+                        bbcShouldUploadArtifacts(branches: ["master", "dev"])
                     }
                 }
             }
@@ -190,7 +197,11 @@ pipeline {
                             env.artifactoryUpload_result = "FAILURE"
                         }
                         bbcGithubNotify(context: "artifactory/upload", status: "PENDING")
-                        bbcTwineUpload(toxenv: "py36")
+                        sh 'rm -rf dist/*'
+                        withBBCRDPythonArtifactory {
+                            bbcMakeGlobalWheel("py36")
+                        }
+                        bbcTwineUpload(toxenv: "py36", pypi: false)
                         script {
                             env.artifactoryUpload_result = "SUCCESS" // This will only run if the steps above succeeded
                         }
