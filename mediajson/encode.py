@@ -13,27 +13,29 @@
 # limitations under the License.
 
 """
-This module contains methods and classes to extend json encoding and decoding
-to cover _immutable_ timestamps, uuids, and fractions.
+This module contains methods and classes to extend json encoding to cover
+timestamps, uuids, and fractions.
 
-To make use of it either use the dumps, loads, dump, and load functions in
-place of the versions from the standard json module, or use the classes
-NMOSJSONEncoder and NMOSJSONDecoder as your encoder and decoder classes.
+To make use of it either use the dumps, and dump functions in place of the
+versions from the standard json module, or use the class NMOSJSONEncoder as
+your encoder class.
 """
 
 import uuid
 import json
-from json import JSONEncoder, JSONDecoder
+from json import JSONEncoder
 from fractions import Fraction
-import re
 
-from typing import Type, Optional, Union, cast
+from typing import Optional, Union, cast
 from .typing import MediaJSONSerialisable, JSONSerialisable
 
 from mediatimestamp.immutable import Timestamp, TimeOffset, TimeRange
 
 
-UUID_REGEX = re.compile(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+__all__ = ["dump", "dumps",
+           "encode_value",
+           "JSONEncoder",
+           "NMOSJSONEncoder"]
 
 
 def dump(obj: MediaJSONSerialisable, fp, *args, **kwargs) -> None:
@@ -52,24 +54,6 @@ def dumps(obj: MediaJSONSerialisable, *args, **kwargs) -> str:
     elif len(args) >= 5 and args[4] is None:
         _args = _args[0:4] + [NMOSJSONEncoder] + _args[5:]
     return json.dumps(obj, *_args, **kwargs)
-
-
-def _base_load(decoder_cls: Type[JSONDecoder], *args, **kwargs) -> None:
-    _args = list(args)
-    if 'cls' not in kwargs and len(args) < 3:
-        kwargs['cls'] = decoder_cls
-    elif len(args) >= 3 and args[2] is None:
-        _args = _args[0:2] + [decoder_cls] + _args[3:]
-    return json.load(*_args, **kwargs)
-
-
-def _base_loads(decoder_cls: Type[JSONDecoder], *args, **kwargs) -> str:
-    _args = list(args)
-    if 'cls' not in kwargs and len(args) < 3:
-        kwargs['cls'] = decoder_cls
-    elif len(args) >= 3 and args[2] is None:
-        _args = _args[0:2] + [decoder_cls] + _args[3:]
-    return json.loads(*_args, **kwargs)
 
 
 def encode_value(o: MediaJSONSerialisable,
@@ -102,35 +86,6 @@ def encode_value(o: MediaJSONSerialisable,
 
 def encode_value_or_fail(o: MediaJSONSerialisable) -> Optional[JSONSerialisable]:
     return cast(Optional[JSONSerialisable], encode_value(o, return_no_encode=False))
-
-
-def _base_decode_value(o: JSONSerialisable,
-                       timestamp_cls: Type[Timestamp],
-                       timeoffset_cls: Type[TimeOffset],
-                       timerange_cls: Type[TimeRange]) -> MediaJSONSerialisable:
-    if isinstance(o, dict):
-        if len(o.keys()) == 2 and "numerator" in o and "denominator" in o:
-            return Fraction(o['numerator'], o['denominator'])
-        else:
-            res = {}
-            for key in o:
-                res[key] = _base_decode_value(o[key], timestamp_cls, timeoffset_cls, timerange_cls)
-            return res
-    elif isinstance(o, list):
-        return [_base_decode_value(v, timestamp_cls, timeoffset_cls, timerange_cls) for v in o]
-    elif isinstance(o, str):
-        if re.match(UUID_REGEX,
-                    o):
-            return uuid.UUID(o)
-        elif re.match(r'^\d+:\d+$', o):
-            return timestamp_cls.from_tai_sec_nsec(o)
-        elif re.match(r'^(\+|-)\d+:\d+$', o):
-            return timeoffset_cls.from_sec_nsec(o)
-        elif re.match(r'^(\(|\[)?(\d+:\d+)?_(\d+:\d+)?(\)|\])?$', o):
-            return timerange_cls.from_str(o)
-        elif o == "()":
-            return timerange_cls.never()
-    return o
 
 
 class NMOSJSONEncoder(JSONEncoder):
