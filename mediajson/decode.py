@@ -42,7 +42,7 @@ __all__ = ["load", "loads",
 UUID_REGEX = re.compile(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
 
 
-def load(*args, **kwargs) -> None:
+def load(*args, **kwargs) -> MediaJSONSerialisable:
     _args = list(args)
     if 'cls' not in kwargs and len(args) < 3:
         kwargs['cls'] = NMOSJSONDecoder
@@ -51,7 +51,7 @@ def load(*args, **kwargs) -> None:
     return json.load(*_args, **kwargs)
 
 
-def loads(*args, **kwargs) -> str:
+def loads(*args, **kwargs) -> MediaJSONSerialisable:
     _args = list(args)
     if 'cls' not in kwargs and len(args) < 3:
         kwargs['cls'] = NMOSJSONDecoder
