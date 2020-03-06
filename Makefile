@@ -1,6 +1,4 @@
-PYTHON=`which python`
-PYTHON2=`which python2`
-PYTHON3=`which python3`
+PYTHON=`which python3`
 PY2DSC=`which py2dsc`
 
 topdir := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
@@ -67,7 +65,7 @@ clean:
 	find $(topdir) -name '*.py,cover' -delete
 
 test:
-	tox -c tox.ini
+	tox -c tox.ini -e $(TOXENV)
 
 testenv: $(TOX_ACTIVATE)
 
@@ -81,7 +79,7 @@ mypy: $(TOX_ACTIVATE)
 	. $(TOX_ACTIVATE) && python -m mypy -p $(MODNAME)
 
 deb_dist: $(topbuilddir)/dist/$(MODNAME)-$(VERSION).tar.gz
-	$(PY2DSC) --with-python2=true --with-python3=true $(topbuilddir)/dist/$(MODNAME)-$(VERSION).tar.gz
+	$(PY2DSC) --with-python2=false --with-python3=true $(topbuilddir)/dist/$(MODNAME)-$(VERSION).tar.gz
 
 $(DEBIANDIR)/%: $(topdir)/debian/% deb_dist
 	cp $< $@
@@ -119,11 +117,9 @@ rpm: $(RPM_PREFIX)/SPECS/$(MODNAME).spec $(RPM_PREFIX)/SOURCES/$(MODNAME)-$(VERS
 	cp $(RPM_PREFIX)/RPMS/*/*.rpm $(topbuilddir)/dist
 
 wheel:
-	$(PYTHON2) $(topdir)/setup.py bdist_wheel
-	$(PYTHON3) $(topdir)/setup.py bdist_wheel
+	$(PYTHON) $(topdir)/setup.py bdist_wheel
 
 egg:
-	$(PYTHON2) $(topdir)/setup.py bdist_egg
-	$(PYTHON3) $(topdir)/setup.py bdist_egg
+	$(PYTHON) $(topdir)/setup.py bdist_egg
 
-.PHONY: test test2 test3 clean install source deb dsc rpm wheel egg all rpm_dirs rpm_spec
+.PHONY: test clean install source deb dsc rpm wheel egg all rpm_dirs rpm_spec docs
