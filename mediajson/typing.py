@@ -42,7 +42,7 @@ RationalTypes = Union[str, float, Decimal, Rational]
 #
 #  Hopefully at some point in the future proper recursive type definitions will be supported
 #  Until that time we simply assume none of our json structures are all that deep
-_MediaJSONSerialisable_value = Union[str, int, UUID, TimeOffset, TimeRange, Fraction]
+_MediaJSONSerialisable_value = Union[str, int, float, UUID, TimeOffset, TimeRange, Fraction]
 # This means that type checking stops at the fourth level
 _MediaJSONSerialisable0 = Union[_MediaJSONSerialisable_value, Sequence[Any], Mapping[str, Any]]
 _MediaJSONSerialisable1 = Union[_MediaJSONSerialisable_value, Sequence[_MediaJSONSerialisable0],
@@ -57,7 +57,7 @@ MediaJSONSerialisable = _MediaJSONSerialisable4
 
 
 # This mechanism does the same for the standard JSON serialisability
-_JSONSerialisable_value = Union[str, int]
+_JSONSerialisable_value = Union[str, int, float]
 # This means that type checking stops at the fourth level
 _JSONSerialisable0 = Union[_JSONSerialisable_value, Sequence[Any], Mapping[str, Any]]
 _JSONSerialisable1 = Union[_JSONSerialisable_value, Sequence[_JSONSerialisable0],
