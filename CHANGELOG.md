@@ -1,5 +1,8 @@
 # mediajson Changelog
 
+# 2.0.1
+- Add `float` to JSON serialisable typing.
+
 # 2.0.0
 - Dropped support for versions of python prior to 3.6
 - Dropped all support for mutable timestamps
