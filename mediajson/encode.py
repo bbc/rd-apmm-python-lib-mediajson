@@ -29,7 +29,10 @@ from fractions import Fraction
 from typing import Optional, Union, cast
 from .typing import MediaJSONSerialisable, JSONSerialisable
 
-from mediatimestamp.immutable import Timestamp, TimeOffset, TimeRange
+from mediatimestamp.immutable import (
+    Timestamp, SupportsMediaTimestamp, mediatimestamp,
+    TimeOffset, SupportsMediaTimeOffset, mediatimeoffset,
+    TimeRange, SupportsMediaTimeRange, mediatimerange)
 
 
 __all__ = ["dump", "dumps",
@@ -80,6 +83,12 @@ def encode_value(o: MediaJSONSerialisable,
     elif isinstance(o, Fraction):
         return {"numerator": o.numerator,
                 "denominator": o.denominator}
+    elif isinstance(o, SupportsMediaTimestamp):
+        return mediatimestamp(o).to_tai_sec_nsec()
+    elif isinstance(o, SupportsMediaTimeOffset):
+        return mediatimeoffset(o).to_sec_nsec()
+    elif isinstance(o, SupportsMediaTimeRange):
+        return mediatimerange(o).to_sec_nsec_range()
     else:
         return o if return_no_encode else None
 

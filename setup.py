@@ -47,7 +47,7 @@ package_names = packages.keys()
 
 # This is where you list packages which are required
 packages_required = [
-    "mediatimestamp >= 2.0.0",
+    "mediatimestamp >= 2.1.0",
     "typing_extensions"
 ]
 
