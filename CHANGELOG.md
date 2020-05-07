@@ -1,7 +1,7 @@
 # mediajson Changelog
 
 # 2.0.2
-- Add support for ecoding `SupportsMediaTimeOffset`, `SupportsMediaTimestamp` and `SupportsMediaTimeRange`
+- Add support for encoding `SupportsMediaTimeOffset`, `SupportsMediaTimestamp` and `SupportsMediaTimeRange`
 
 # 2.0.1
 - Add `float` to JSON serialisable typing.
