@@ -100,3 +100,19 @@ class TestJSONEncode(unittest.TestCase):
         decoded = mediajson.loads(encoded)
 
         self.assertEqual(MEDIAJSON_DATA, decoded)
+
+    def test_encode_convertible(self):
+        class ConvertibleToTimestamp(object):
+            def __init__(self, ts: Timestamp):
+                self.ts = ts
+
+            def __mediatimestamp__(self) -> Timestamp:
+                return self.ts
+
+        ts = Timestamp(255, 37)
+        c = ConvertibleToTimestamp(ts)
+
+        ts_enc = mediajson.encode_value(ts)
+        c_enc = mediajson.encode_value(c)
+
+        self.assertEqual(ts_enc, c_enc)

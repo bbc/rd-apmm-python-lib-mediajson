@@ -11,7 +11,7 @@ import os
 
 # Basic metadata
 name = 'mediajson'
-version = '2.0.1'
+version = '2.0.2'
 description = 'A JSON serialiser and parser for python that supports extensions convenient for our media grain formats'
 url = 'https://github.com/bbc/rd-apmm-python-lib-mediajson'
 author = u'James P. Weaver'
@@ -47,7 +47,7 @@ package_names = packages.keys()
 
 # This is where you list packages which are required
 packages_required = [
-    "mediatimestamp >= 2.0.0",
+    "mediatimestamp >= 2.1.0",
     "typing_extensions"
 ]
 

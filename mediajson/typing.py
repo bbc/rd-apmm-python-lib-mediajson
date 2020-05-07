@@ -25,7 +25,10 @@ from decimal import Decimal
 from numbers import Rational
 from fractions import Fraction
 from uuid import UUID
-from mediatimestamp.immutable import TimeOffset, TimeRange
+from mediatimestamp.immutable import (
+    SupportsMediaTimeOffset,
+    SupportsMediaTimestamp,
+    SupportsMediaTimeRange)
 
 
 __all__ = ["RationalTypes",
@@ -42,7 +45,15 @@ RationalTypes = Union[str, float, Decimal, Rational]
 #
 #  Hopefully at some point in the future proper recursive type definitions will be supported
 #  Until that time we simply assume none of our json structures are all that deep
-_MediaJSONSerialisable_value = Union[str, int, float, UUID, TimeOffset, TimeRange, Fraction]
+_MediaJSONSerialisable_value = Union[
+    str,
+    int,
+    float,
+    UUID,
+    SupportsMediaTimeOffset,
+    SupportsMediaTimestamp,
+    SupportsMediaTimeRange,
+    Fraction]
 # This means that type checking stops at the fourth level
 _MediaJSONSerialisable0 = Union[_MediaJSONSerialisable_value, Sequence[Any], Mapping[str, Any]]
 _MediaJSONSerialisable1 = Union[_MediaJSONSerialisable_value, Sequence[_MediaJSONSerialisable0],
