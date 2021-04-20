@@ -1,5 +1,8 @@
 # mediajson Changelog
 
+# 2.0.3
+- Filter out legacy `encoding` parameter in `NMOSJSONDecoder.__init__` to workaround simplejson adding it.
+
 # 2.0.2
 - Add support for encoding `SupportsMediaTimeOffset`, `SupportsMediaTimestamp` and `SupportsMediaTimeRange`
 

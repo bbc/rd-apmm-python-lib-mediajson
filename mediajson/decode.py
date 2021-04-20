@@ -87,6 +87,16 @@ def decode_value(o: JSONSerialisable) -> MediaJSONSerialisable:
 
 
 class NMOSJSONDecoder(JSONDecoder):
+    def __init__(self, **kwargs):
+        # Filter out the 'encoding' parameter as a simple workaround for simplejson adding it.
+        # The parameter is no longer supported in python 3.
+        py3_kwargs = {
+            key: value
+            for (key, value) in kwargs.items()
+            if key != "encoding"
+        }
+        super().__init__(**py3_kwargs)
+
     def raw_decode(self, s: str, *args, **kwargs) -> Tuple[MediaJSONSerialisable, int]:
         value: JSONSerialisable
         (value, offset) = super(NMOSJSONDecoder, self).raw_decode(s,
