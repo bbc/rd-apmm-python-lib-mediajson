@@ -6,11 +6,11 @@
  - Run Python 3 unit tests in tox
  - Build Debian packages for supported Ubuntu versions
 
- If these steps succeed and the master branch is being built, wheels and debs are uploaded to Artifactory and the
+ If these steps succeed and the main branch is being built, wheels and debs are uploaded to Artifactory and the
  R&D Debian mirrors.
 
  Optionally you can set FORCE_PYUPLOAD to force upload to Artifactory, and FORCE_DEBUPLOAD to force Debian package
- upload on non-master branches.
+ upload on non-main branches.
 */
 
 pipeline {
@@ -26,7 +26,7 @@ pipeline {
         booleanParam(name: "FORCE_DEBUPLOAD", defaultValue: false, description: "Force Debian package upload")
     }
     triggers {
-        cron(env.BRANCH_NAME == 'master' ? 'H H(0-8) * * *' : '') // Build master some time every morning
+        cron(env.BRANCH_NAME == 'main' ? 'H H(0-8) * * *' : '') // Build main some time every morning
     }
     environment {
         http_proxy = "http://www-cache.rd.bbc.co.uk:8080"
@@ -87,19 +87,19 @@ pipeline {
         stage ("Python Unit Tests") {
             steps {
                 script {
-                    env.py3_result = "FAILURE"
+                    env.unittest_result = "FAILURE"
                 }
-                bbcGithubNotify(context: "tests/py3", status: "PENDING")
+                bbcGithubNotify(context: "tests/unit", status: "PENDING")
                 withBBCRDPythonArtifactory {
                    sh 'make test'
                 }
                 script {
-                    env.py3_result = "SUCCESS" // This will only run if the sh above succeeded
+                    env.unittest_result = "SUCCESS" // This will only run if the sh above succeeded
                 }
             }
             post {
                 always {
-                    bbcGithubNotify(context: "tests/py3", status: env.py3_result)
+                    bbcGithubNotify(context: "tests/unit", status: env.unittest_result)
                 }
             }
         }
@@ -132,7 +132,7 @@ pipeline {
                 bbcGithubNotify(context: "deb/packageBuild", status: "PENDING")
                 // Build for all supported platforms and extract results into workspace
                 bbcParallelPbuild(stashname: "deb_dist",
-                                    dists: bbcGetSupportedUbuntuVersions(exclude: ["xenial"]),
+                                    dists: bbcGetSupportedUbuntuVersions(),
                                     arch: "amd64")
             }
             post {
@@ -152,7 +152,7 @@ pipeline {
                     expression { return params.FORCE_PYUPLOAD }
                     expression { return params.FORCE_DEBUPLOAD }
                     expression {
-                        bbcShouldUploadArtifacts(branches: ["master", "dev"])
+                        bbcShouldUploadArtifacts(branches: ["main", "dev"])
                     }
                 }
             }
@@ -162,7 +162,7 @@ pipeline {
                         anyOf {
                             expression { return params.FORCE_PYUPLOAD }
                             expression {
-                                bbcShouldUploadArtifacts(branches: ["master"])
+                                bbcShouldUploadArtifacts(branches: ["main"])
                             }
                         }
                     }
@@ -218,7 +218,7 @@ pipeline {
                         anyOf {
                             expression { return params.FORCE_DEBUPLOAD }
                             expression {
-                                bbcShouldUploadArtifacts(branches: ["master"])
+                                bbcShouldUploadArtifacts(branches: ["main"])
                             }
                         }
                     }
@@ -228,7 +228,7 @@ pipeline {
                         }
                         bbcGithubNotify(context: "deb/upload", status: "PENDING")
                         script {
-                            for (def dist in bbcGetSupportedUbuntuVersions()) {
+                            for (def dist in bbcGetSupportedUbuntuVersions(exclude: ["xenial"])) {
                                 bbcDebUpload(sourceFiles: "_result/${dist}-amd64/*",
                                                 removePrefix: "_result/${dist}-amd64",
                                                 dist: "${dist}",
