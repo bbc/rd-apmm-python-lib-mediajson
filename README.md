@@ -12,7 +12,7 @@ understanding a wider range of python types including the `mediatimestamps.times
 
 ### Requirements
 
-* A working Python 3.6+ installation
+* A working Python 3.10+ installation
 * The tool [tox](https://tox.readthedocs.io/en/latest/) is needed to run the unittests, but not required to use the library.
 
 ### Steps

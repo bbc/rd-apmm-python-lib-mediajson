@@ -40,10 +40,9 @@ pipeline {
                 sh 'rm -rf /tmp/$(basename ${WORKSPACE})/'
             }
         }
-        stage("Ensure pyenv has python3.6.8") {
+        stage("Prepare for build") {
             steps {
-                sh "pyenv install -s 3.6.8"
-                sh "pyenv local 3.6.8"
+                bbcStagePyenvEnsureVersion("3.10")
             }
         }
         stage ("Linting Check") {
@@ -172,8 +171,8 @@ pipeline {
                         }
                         bbcGithubNotify(context: "pypi/upload", status: "PENDING")
                         sh 'rm -rf dist/*'
-                        bbcMakeGlobalWheel("py36")
-                        bbcTwineUpload(toxenv: "py36", pypi: true)
+                        bbcMakeGlobalWheel("py310")
+                        bbcTwineUpload(toxenv: "py310", pypi: true)
                         script {
                             env.pypiUpload_result = "SUCCESS" // This will only run if the steps above succeeded
                         }
@@ -200,9 +199,9 @@ pipeline {
                         bbcGithubNotify(context: "artifactory/upload", status: "PENDING")
                         sh 'rm -rf dist/*'
                         withBBCRDPythonArtifactory {
-                            bbcMakeGlobalWheel("py36")
+                            bbcMakeGlobalWheel("py310")
                         }
-                        bbcTwineUpload(toxenv: "py36", pypi: false)
+                        bbcTwineUpload(toxenv: "py310", pypi: false)
                         script {
                             env.artifactoryUpload_result = "SUCCESS" // This will only run if the steps above succeeded
                         }

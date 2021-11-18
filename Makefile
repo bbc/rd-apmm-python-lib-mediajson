@@ -27,7 +27,7 @@ RPMBUILDDIRS=$(patsubst %, $(RPM_PREFIX)/%, $(RPMDIRS))
 
 TOX_WORK_DIR?=$(topbuilddir)
 TOXDIR=$(TOX_WORK_DIR)/$(MODNAME)/.tox/
-TOXENV?=py36
+TOXENV?=py310
 TOX_ACTIVATE=$(TOXDIR)/$(TOXENV)/bin/activate
 
 all:

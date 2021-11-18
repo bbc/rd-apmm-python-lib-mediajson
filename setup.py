@@ -58,7 +58,7 @@ packages_required = [
 deps_required = []
 
 setup(name=name,
-      python_requires='>=3.6.0',
+      python_requires='>=3.10.0',
       version=version,
       description=description,
       url=url,
