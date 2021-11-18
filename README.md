@@ -60,14 +60,11 @@ $ make test
 ```
 ### Packaging
 
-Debian and RPM packages can be built using:
+Debian packages can be built using:
 
 ```bash
 # Debian packaging
 $ make deb
-
-# RPM packageing
-$ make rpm
 ```
 
 ### Continuous Integration
