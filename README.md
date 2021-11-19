@@ -12,7 +12,7 @@ understanding a wider range of python types including the `mediatimestamps.times
 
 ### Requirements
 
-* A working Python 3.6+ installation
+* A working Python 3.10+ installation
 * The tool [tox](https://tox.readthedocs.io/en/latest/) is needed to run the unittests, but not required to use the library.
 
 ### Steps
@@ -60,14 +60,11 @@ $ make test
 ```
 ### Packaging
 
-Debian and RPM packages can be built using:
+Debian packages can be built using:
 
 ```bash
 # Debian packaging
 $ make deb
-
-# RPM packageing
-$ make rpm
 ```
 
 ### Continuous Integration
@@ -95,9 +92,9 @@ Please ensure you have run the test suite before submitting a Pull Request, and 
 
 ## Authors
 
-* James Weaver (james.barrett@bbc.co.uk)
+* James Weaver
 * Philip deNier (philip.denier@bbc.co.uk)
-* Sam Nicholson (sam.nicholson@bbc.co.uk)
+* Sam Mesterton-Gibbons (sam.mesterton-gibbons@bbc.co.uk)
 
 ## License
 

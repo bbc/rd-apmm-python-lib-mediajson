@@ -1,5 +1,8 @@
 # mediajson Changelog
 
+# 2.1.0
+- Drop support for Python <= 3.10 (3.6 upwards should still work, but are no longer explictly supported or built for)
+
 # 2.0.3
 - Filter out legacy `encoding` parameter in `NMOSJSONDecoder.__init__` to workaround simplejson adding it.
 
