@@ -13,7 +13,7 @@ understanding a wider range of python types including the `mediatimestamps.times
 ### Requirements
 
 * A working Python 3.10+ installation
-* The tool [tox](https://tox.readthedocs.io/en/latest/) is needed to run the unittests, but not required to use the library.
+* The tool [Docker](https://docs.docker.com/engine/install/) is needed to run the tests, but not required to use the library.
 
 ### Steps
 
@@ -21,13 +21,10 @@ understanding a wider range of python types including the `mediatimestamps.times
 # Install from pip
 $ pip install mediatimestamp
 
-# Install via apt-get
-$ apt-get install python-mediatimestamp python3-mediatimestamp
-
 # Install directly from source repo
 $ git clone git@github.com:bbc/rd-apmm-python-lib-mediajson.git
 $ cd rd-apmm-python-lib-mediajson
-$ pip install -e .
+$ make install
 ```
 
 ## Usage
@@ -45,26 +42,27 @@ print(mediajson.dumps(mediatimestamp.Timestamp.get_time()))
 The API is well documented in the docstrings of the module mediajson, to view:
 
 ```bash
-pydoc mediajson
+make docs
 ```
+This command will render documentation as HTML in the `/docs` directory.
 
 ## Development
+### Commontooling
+
+This repository uses a library of makefiles, templates, and other tools for development tooling and CI workflows. To discover operations that may be run against this repo, run the following in the top level of the repo:
+
+```bash
+$ make
+```
+
 ### Testing
 
-To run the unittests for this package in a virtual environment follow these steps:
+To run the unittests for this package in a docker container follow these steps:
 
 ```bash
 $ git clone git@github.com:bbc/rd-apmm-python-lib-mediajson.git
 $ cd rd-apmm-python-lib-mediajson
 $ make test
-```
-### Packaging
-
-Debian packages can be built using:
-
-```bash
-# Debian packaging
-$ make deb
 ```
 
 ### Continuous Integration
@@ -78,15 +76,11 @@ for this package.
 
 We use [Semantic Versioning](https://semver.org/) for this repository
 
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md)
-
 ## Contributing
 
 The code in this repository was previously released as part of the
 nmos-common library (<https://github.com/bbc/nmos-common/>). For
-contributing wok please see the file [CONTRIBUTING.md](./CONTRIBUTING.md) in this repository.
+contributing work please see the file [CONTRIBUTING.md](./CONTRIBUTING.md) in this repository.
 
 Please ensure you have run the test suite before submitting a Pull Request, and include a version bump in line with our [Versioning](#versioning) policy.
 
@@ -95,6 +89,7 @@ Please ensure you have run the test suite before submitting a Pull Request, and 
 * James Weaver
 * Philip deNier (philip.denier@bbc.co.uk)
 * Sam Mesterton-Gibbons (sam.mesterton-gibbons@bbc.co.uk)
+* James Sandford (james.sandford@bbc.co.uk)
 
 ## License
 
