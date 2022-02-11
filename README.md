@@ -87,9 +87,11 @@ Please ensure you have run the test suite before submitting a Pull Request, and 
 ## Authors
 
 * James Weaver
-* Philip deNier (philip.denier@bbc.co.uk)
-* Sam Mesterton-Gibbons (sam.mesterton-gibbons@bbc.co.uk)
-* James Sandford (james.sandford@bbc.co.uk)
+* Philip deNier
+* Sam Mesterton-Gibbons
+* James Sandford
+
+For further information, contact <cloudfit-opensource@rd.bbc.co.uk>
 
 ## License
 

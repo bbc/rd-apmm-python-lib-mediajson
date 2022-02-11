@@ -7,14 +7,13 @@
 # not have permission to reproduce it.
 
 from setuptools import setup
-import os
 
 # Basic metadata
 name = 'mediajson'
 description = 'A JSON serialiser and parser for python that supports extensions convenient for our media grain formats'
 url = 'https://github.com/bbc/rd-apmm-python-lib-mediajson'
-author = u'James P. Weaver'
-author_email = u'james.barrett@bbc.co.uk'
+author = u'BBC R&D'
+author_email = u'cloudfit-opensource@rd.bbc.co.uk'
 license = 'Apache 2'
 long_description = description
 
