@@ -1,20 +1,21 @@
-{%- set modname = "mediajson" -%}
-{%- import 'static-commontooling/docker/Dockerfile_multi_macros.j2' as macros -%}
+{%- import 'static-commontooling/docker/Dockerfile_multi_macros.j2' as macros with context -%}
 
 {{ macros.preamble() }}
 
-{{ macros.layer(modname, entrypoint=False) }}
+{{ macros.source() }}
 
-{{ macros.testdeps(modname) }}
+{{ macros.layer(entrypoint=False) }}
 
-{{ macros.tests(modname) }}
+{{ macros.testdeps() }}
 
-{{ macros.unittest(modname) }}
+{{ macros.tests() }}
 
-{{ macros.flake8(modname) }}
+{{ macros.unittest() }}
 
-{{ macros.mypy(modname) }}
+{{ macros.flake8() }}
 
-{{ macros.wheel(modname) }}
+{{ macros.mypy() }}
 
-{{ macros.docs(modname) }}
+{{ macros.wheel() }}
+
+{{ macros.docs() }}
