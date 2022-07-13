@@ -118,7 +118,7 @@ vagrant-support/roles
 # Ansible
 *.retry
 
-# HTML versions of RAML docs
+# HTML versions of API docs
 api/*.html
 
 # HTML versions of library docs
@@ -140,9 +140,6 @@ tox.ini
 
 # .gitignore intermediary file
 .gitignore.gen
-
-# setup.cfg
-setup.cfg
 
 # commontooling itself
 commontooling
