@@ -54,15 +54,20 @@ MEDIAJSON_DATA = {
                    TimeRange.from_start(Timestamp(417798915, 0), TimeRange.INCLUSIVE),
                    TimeRange.from_start(Timestamp(417798915, 0), TimeRange.EXCLUSIVE),
                    TimeRange.from_end(Timestamp(417798915, 0), TimeRange.INCLUSIVE),
-                   TimeRange.from_end(Timestamp(417798915, 0), TimeRange.EXCLUSIVE)]
+                   TimeRange.from_end(Timestamp(417798915, 0), TimeRange.EXCLUSIVE),
+                   TimeRange(Timestamp(417798916, 999, -1), Timestamp(417798915, 0, -1), TimeRange.INCLUSIVE),
+                   TimeRange(Timestamp(417798916, 999, -1), Timestamp(417798915, 0), TimeRange.INCLUSIVE),
+                   TimeRange.from_start(Timestamp(417798916, 999, -1), TimeRange.INCLUSIVE),
+                   TimeRange.from_end(Timestamp(417798916, 999, -1), TimeRange.INCLUSIVE)]
 }
 
 MEDIAJSON_STRING = '{"foo": "bar", "baz": ["boop", "beep"], "boggle": {"cat": "\\u732b", "kitten": "\\u5b50\\u732b"}, '\
     '"numeric": 25, "boolean": true, "decimal": 0.44, "uuid": "b8b4a34f-3293-11e8-89c0-acde48001122", '\
     '"rational": {"numerator": 30000, "denominator": 1001},'\
     '"timestamps": ["417798915:0", "-417798915:0"],'\
-    '"timeranges": ["[417798915:0_417798916:999]", "(417798915:0_417798916:999)", "[417798915:0_417798916:999)", '\
-    '"(417798915:0_417798916:999]", "()", "_", "[417798915:0_", "(417798915:0_", "_417798915:0]", "_417798915:0)"]}'
+    '"timeranges": ["[417798915:0_417798916:999]", "(417798915:0_417798916:999)", "[417798915:0_417798916:999)",'\
+    '"(417798915:0_417798916:999]", "()", "_", "[417798915:0_", "(417798915:0_", "_417798915:0]", "_417798915:0)",'\
+    '"[-417798916:999_-417798915:0]", "[-417798916:999_417798915:0]", "[-417798916:999_", "_-417798916:999]"]}'
 
 
 class TestJSONDecode(unittest.TestCase):
