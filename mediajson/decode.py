@@ -75,7 +75,7 @@ def decode_value(o: JSONSerialisable) -> MediaJSONSerialisable:
         if re.match(UUID_REGEX,
                     o):
             return uuid.UUID(o)
-        elif re.match(r'^(\+|-)?\d+:\d+$', o):
+        elif re.match(r'^-?\d+:\d+$', o):
             return Timestamp.from_sec_nsec(o)
         elif re.match(r'^(\(|\[)?(\d+:\d+)?_(\d+:\d+)?(\)|\])?$', o):
             return TimeRange.from_str(o)
