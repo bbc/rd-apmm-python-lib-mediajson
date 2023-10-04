@@ -31,7 +31,6 @@ from .typing import MediaJSONSerialisable, JSONSerialisable
 
 from mediatimestamp.immutable import (
     Timestamp, SupportsMediaTimestamp, mediatimestamp,
-    TimeOffset, SupportsMediaTimeOffset, mediatimeoffset,
     TimeRange, SupportsMediaTimeRange, mediatimerange)
 
 
@@ -75,8 +74,6 @@ def encode_value(o: MediaJSONSerialisable,
     elif isinstance(o, uuid.UUID):
         return str(o)
     elif isinstance(o, Timestamp):
-        return o.to_tai_sec_nsec()
-    elif isinstance(o, TimeOffset):
         return o.to_sec_nsec()
     elif isinstance(o, TimeRange):
         return o.to_sec_nsec_range()
@@ -85,8 +82,6 @@ def encode_value(o: MediaJSONSerialisable,
                 "denominator": o.denominator}
     elif isinstance(o, SupportsMediaTimestamp):
         return mediatimestamp(o).to_tai_sec_nsec()
-    elif isinstance(o, SupportsMediaTimeOffset):
-        return mediatimeoffset(o).to_sec_nsec()
     elif isinstance(o, SupportsMediaTimeRange):
         return mediatimerange(o).to_sec_nsec_range()
     else:

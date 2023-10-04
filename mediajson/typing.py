@@ -25,10 +25,7 @@ from decimal import Decimal
 from numbers import Rational
 from fractions import Fraction
 from uuid import UUID
-from mediatimestamp.immutable import (
-    SupportsMediaTimeOffset,
-    SupportsMediaTimestamp,
-    SupportsMediaTimeRange)
+from mediatimestamp.immutable import SupportsMediaTimestamp, SupportsMediaTimeRange
 
 
 __all__ = ["RationalTypes",
@@ -50,7 +47,6 @@ _MediaJSONSerialisable_value = Union[
     int,
     float,
     UUID,
-    SupportsMediaTimeOffset,
     SupportsMediaTimestamp,
     SupportsMediaTimeRange,
     Fraction]
