@@ -43,7 +43,7 @@ MEDIAJSON_DATA = {
     "boolean": True,
     "decimal": 0.44,
     "uuid": UUID("b8b4a34f-3293-11e8-89c0-acde48001122"),
-    "rational": Fraction(30000, 1001),
+    "rationals": [Fraction(30000, 1001), Fraction(50, 1)],
     "timestamps": [Timestamp.from_sec_nsec("417798915:0"), Timestamp.from_sec_nsec("-417798915:0")],
     "timeranges": [TimeRange(Timestamp(417798915, 0), Timestamp(417798916, 999), TimeRange.INCLUSIVE),
                    TimeRange(Timestamp(417798915, 0), Timestamp(417798916, 999), TimeRange.EXCLUSIVE),
@@ -63,7 +63,7 @@ MEDIAJSON_DATA = {
 
 MEDIAJSON_STRING = '{"foo": "bar", "baz": ["boop", "beep"], "boggle": {"cat": "\\u732b", "kitten": "\\u5b50\\u732b"}, '\
     '"numeric": 25, "boolean": true, "decimal": 0.44, "uuid": "b8b4a34f-3293-11e8-89c0-acde48001122", '\
-    '"rational": {"numerator": 30000, "denominator": 1001},'\
+    '"rationals": [{"numerator": 30000, "denominator": 1001}, {"numerator": 50}], '\
     '"timestamps": ["417798915:0", "-417798915:0"],'\
     '"timeranges": ["[417798915:0_417798916:999]", "(417798915:0_417798916:999)", "[417798915:0_417798916:999)",'\
     '"(417798915:0_417798916:999]", "()", "_", "[417798915:0_", "(417798915:0_", "_417798915:0]", "_417798915:0)",'\
