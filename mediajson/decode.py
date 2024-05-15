@@ -64,6 +64,8 @@ def decode_value(o: JSONSerialisable) -> MediaJSONSerialisable:
     if isinstance(o, dict):
         if len(o.keys()) == 2 and "numerator" in o and "denominator" in o:
             return Fraction(o['numerator'], o['denominator'])
+        elif len(o.keys()) == 1 and "numerator" in o:
+            return Fraction(o['numerator'], 1)
         else:
             res = {}
             for key in o:
