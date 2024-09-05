@@ -32,7 +32,7 @@ on:
       commontoolingBranch:
         description: 'Commontooling branch or tag to use'
         required: true
-        default: 'main'
+        default: 'philipn-python-install-setuptools'
         type: string
 
 jobs:
@@ -48,5 +48,5 @@ jobs:
       # workflow_dispatch inputs are always strings. Convert to boolean.
       forceDocsUpload: ${{ inputs.forceDocsUpload == true }}
       pythonVersion: ${{ inputs.pythonVersion || '3.10' }}
-      commontoolingBranch: ${{ inputs.commontoolingBranch || 'main' }}
+      commontoolingBranch: ${{ inputs.commontoolingBranch || 'philipn-python-install-setuptools' }}
     secrets: inherit
